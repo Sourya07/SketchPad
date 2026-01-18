@@ -1,14 +1,21 @@
 import express, { NextFunction, Request, Response, Router } from "express";
 import jwt from 'jsonwebtoken'
 import authMiddleware from "./middleware";
-
+import { JWT_SECRET } from "@repo/backend-common/config"
+import { CreateuserSchema } from "@repo/common/types"
 const router: Router = express.Router();
-const JWT_SECRET = "aeios"
 
 router.get("/", (req, res) => {
     res.json({ msg: "Hi, this is user route" });
 });
 router.post("/signup", (req, res) => {
+
+    const data = CreateuserSchema.safeParse(req.body)
+    if (!data) {
+        res.json({
+            msg: "user data is invalid "
+        })
+    }
     res.json({ msg: "Hi, this is user route" });
     const body = req.body
 

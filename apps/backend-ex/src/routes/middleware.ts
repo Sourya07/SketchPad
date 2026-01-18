@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
-
-const JWT_SECRET = "aeios";
+import { JWT_SECRET } from "@repo/backend-common/config"
 
 export default function authMiddleware(
     req: Request,
@@ -14,7 +13,7 @@ export default function authMiddleware(
         return res.status(401).json({ msg: "Token missing" });
     }
 
-    const token = authHeader.split(" ")[1]; // Bearer <token>
+    const token = authHeader.split(" ")[1];
 
     if (!token) {
         return res.status(401).json({ msg: "Invalid token format" });
