@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken'
 import authMiddleware from "./middleware";
 import { JWT_SECRET } from "@repo/backend-common/config"
 import { CreateuserSchema } from "@repo/common/types"
+
 const router: Router = express.Router();
 
 router.get("/", (req, res) => {

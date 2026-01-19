@@ -2,9 +2,11 @@ import WebSocket, { WebSocketServer } from "ws";
 import jwt from "jsonwebtoken"
 
 const wss = new WebSocketServer({ port: 8080 });
-import { JWT_SECRET } from "@repo/backend-common/config"
-wss.on('connection', function connection(ws, req) {
 
+import { JWT_SECRET } from "@repo/backend-common/config"
+
+wss.on('connection', function connection(ws, req) {
+    ws.on('error', console.error);
     const url = new URL(req.url ?? "");
     const token = url.searchParams.get("token");
 
@@ -14,7 +16,7 @@ wss.on('connection', function connection(ws, req) {
 
         return jwt.verify(token, JWT_SECRET)
     } catch {
-        ws.on('error', console.error);
+        ws.close()
 
 
     }
@@ -30,5 +32,5 @@ wss.on('connection', function connection(ws, req) {
 
     });
 
-    ws.send('something');
+
 });
