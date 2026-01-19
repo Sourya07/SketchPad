@@ -2,41 +2,92 @@ import express, { NextFunction, Request, Response, Router } from "express";
 import jwt from 'jsonwebtoken'
 import authMiddleware from "./middleware";
 import { JWT_SECRET } from "@repo/backend-common/config"
-import { CreateuserSchema } from "@repo/common/types"
+import { CreateuserSchema, signin } from "@repo/common/types"
+import { prisma } from "@repo/db/dbs"
+import bcrypt from "bcrypt"
+
 
 const router: Router = express.Router();
 
 router.get("/", (req, res) => {
     res.json({ msg: "Hi, this is user route" });
 });
-router.post("/signup", (req, res) => {
+router.post("/signup", async (req, res) => {
+    // 1️⃣ Validate input
+    const parsed = CreateuserSchema.safeParse(req.body);
 
-    const data = CreateuserSchema.safeParse(req.body)
-    if (!data) {
-        res.json({
-            msg: "user data is invalid "
-        })
+    if (!parsed.success) {
+        return res.status(400).json({
+            msg: "User data is invalid",
+            errors: parsed.error.flatten(),
+        });
     }
-    res.json({ msg: "Hi, this is user route" });
-    const body = req.body
 
+    const { username, password, name } = parsed.data;
+    console.log(username)
+
+    const existingUser = await prisma.user.findUnique({
+        where: { email: username },
+    });
+
+    if (existingUser) {
+        return res.status(409).json({
+            msg: "User already exists",
+        });
+    }
+
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+
+    const user = await prisma.user.create({
+        data: {
+            email: username,
+            name,
+            password: hashedPassword,
+        },
+    });
+
+    return res.status(201).json({
+        msg: "User created successfully",
+        userId: user.id,
+    });
 });
 
-router.post("/signin", (req, res) => {
-    res.json({ msg: "Hi, this is user route" });
-    const body = req.body
-    ////db logic
 
-    const userId = 1;
-    const token = jwt.sign({
-        userId
-    }, JWT_SECRET)
+router.post("/signin", async (req, res) => {
 
-    // if (!user) {
-    //     res.json({
-    //         msg: "no user is there "
-    //     })
-    // }
+    const validation = signin.safeParse(req.body)
+    if (!validation.success) {
+        return res.status(400).json({
+            msg: "User data is invalid",
+            errors: validation.error.flatten(),
+        });
+    }
+    const { username, password } = validation.data;
+
+    const users = await prisma.user.findUnique({
+        where: {
+            email: username
+        }
+    })
+    if (!users) {
+        return res.status(409).json({
+            msg: " No User  exists",
+        });
+    }
+
+    const hashedPassword = await bcrypt.compare(password, users.password)
+    if (!hashedPassword) {
+        return res.status(401).json({
+            msg: "Invalid credentials",
+        });
+    }
+
+    const token = jwt.sign(
+        { userId: users.id },
+        JWT_SECRET
+    );
     res.json({
         token
     })

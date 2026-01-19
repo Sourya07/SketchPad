@@ -27,7 +27,7 @@ export default function authMiddleware(
         }
 
         (req as any).userId = decoded.userId;
-        next(); // ✅ VERY IMPORTANT
+        next();
     } catch (err) {
         return res.status(401).json({ msg: "Token expired or invalid" });
     }

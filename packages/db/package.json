@@ -2,11 +2,11 @@
   "name": "@repo/db",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "exports": {
-    "db": "./src/db.ts"
+    "./dbs": "./dist/src/index.js"
   },
   "scripts": {
+    "build": "tsc && sed -i '' 's/globalThis.*import.meta.url.*/\\/\\/ patched/' dist/generated/prisma/client.js",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev --skip-generate",
     "db:deploy": "prisma migrate deploy"
@@ -14,15 +14,16 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
     "@types/node": "^22.15.3",
-    "@types/pg": "^8.16.0"
+    "@types/pg": "^8.16.0",
+    "prisma": "^7.2.0"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.2.0",
-    "pg": "^8.17.1",
-    "prisma": "^7.2.0"
+    "@prisma/client": "^7.2.0",
+    "dotenv": "^17.2.3",
+    "pg": "^8.17.1"
   }
 }
