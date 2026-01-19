@@ -2,7 +2,7 @@ import express, { NextFunction, Request, Response, Router } from "express";
 import jwt from 'jsonwebtoken'
 import authMiddleware from "./middleware";
 import { JWT_SECRET } from "@repo/backend-common/config"
-import { CreateuserSchema, signin } from "@repo/common/types"
+import { CreateuserSchema, signin, room } from "@repo/common/types"
 import { prisma } from "@repo/db/dbs"
 import bcrypt from "bcrypt"
 
@@ -93,13 +93,34 @@ router.post("/signin", async (req, res) => {
     })
 
 });
+router.post("/room", authMiddleware, async (req, res) => {
+    const parsedData = room.safeParse(req.body);
+    if (!parsedData.success) {
+        res.json({
+            message: "Incorrect inputs"
+        })
+        return;
+    }
+    // @ts-ignore: TODO: Fix this
+    const userId = req.userId;
 
-router.post("/room", authMiddleware, (req: Request, res: Response, next: NextFunction) => {
-    res.json({
-        msg: "hiii"
-    })
+    try {
+        const room = await prisma.room.create({
+            data: {
+                slug: parsedData.data.name,
+                adminId: userId
+            }
+        })
+
+        res.json({
+            roomId: room.id
+        })
+    } catch (e) {
+        res.status(411).json({
+            message: "Room already exists with this name"
+        })
+    }
 })
-
 
 
 export default router;
