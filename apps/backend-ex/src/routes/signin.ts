@@ -13,7 +13,8 @@ router.get("/", (req, res) => {
     res.json({ msg: "Hi, this is user route" });
 });
 router.post("/signup", async (req, res) => {
-    // 1️⃣ Validate input
+
+    console.log("hello")
     const parsed = CreateuserSchema.safeParse(req.body);
 
     if (!parsed.success) {

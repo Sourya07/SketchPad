@@ -11,16 +11,16 @@ export function Navbar() {
                 <a className="hover:text-foreground cursor-pointer">Features</a>
                 <a className="hover:text-foreground cursor-pointer">Pricing</a>
                 <Link
-                    href="/signin"
+                    href="/signup"
                     className="hover:text-foreground cursor-pointer"
                 >
-                    Logout
+                    signup
                 </Link>
                 <Link
                     href="/signin"
                     className="hover:text-foreground cursor-pointer"
                 >
-                    Login
+                    signin
                 </Link>
             </nav>
         </div>

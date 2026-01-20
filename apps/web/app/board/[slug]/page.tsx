@@ -1,15 +1,16 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import Drawstructure from "../../../componets/drawStructure/page";
-
+export type Tool = "rect" | "circle" | "triangle";
 export default function Canvas() {
+    const [tool, setTool] = useState<Tool>("circle");
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
     useEffect(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
-        Drawstructure(canvas)
+        Drawstructure(canvas, () => tool)
     }, [])
 
     return (
