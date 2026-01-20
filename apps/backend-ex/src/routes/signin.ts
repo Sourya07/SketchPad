@@ -151,4 +151,31 @@ router.get("/chat/:id", authMiddleware, async (req, res) => {
 });
 
 
+
+
+router.get("/room/:slug", authMiddleware, async (req, res) => {
+    try {
+        const roomname = req.params.slug
+
+
+        if (typeof roomname !== "string") {
+            return res.status(400).json({ error: "Invalid room slug" });
+        }
+
+        const messages = await prisma.room.findFirst({
+            where: {
+                slug: roomname
+            },
+
+        });
+
+
+        res.json({
+            messages
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Failed to fetch messages" });
+    }
+});
 export default router;
