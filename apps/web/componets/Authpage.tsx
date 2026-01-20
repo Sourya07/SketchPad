@@ -22,7 +22,7 @@ export function Authpage() {
         try {
             const endpoint = isSignin ? "signin" : "signup";
 
-            // send name only for signup
+
             const payload = isSignin
                 ? {
                     username: state.username,
@@ -32,7 +32,10 @@ export function Authpage() {
 
             const response = await axios.post(
                 `${BACKEND_URL}/v1/${endpoint}`,
-                payload
+                payload,
+                {
+                    withCredentials: true,
+                }
             );
 
             console.log(response.data);
