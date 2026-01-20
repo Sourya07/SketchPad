@@ -6,17 +6,18 @@ import { BACKEND_URL, WEBSOCKET } from "../../../server";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 
-export type Tool = "rect" | "circle" | "triangle";
+export type Tool = "rect" | "circle" | "triangle" | "pencil";
 
 export default function Canvas({ params }: { params: Promise<{ slug: string }> }) {
     const { slug: roomName } = use(params);
-    const [tool] = useState<Tool>("circle");
+    const [tool, setTool] = useState<Tool>("pencil");
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [socket, setSocket] = useState<WebSocket | null>(null);
     const [roomId, setRoomId] = useState<number | null>(null);
     const router = useRouter();
 
     useEffect(() => {
+
         const init = async () => {
             try {
                 const response = await axios.get(`${BACKEND_URL}/v1/room/${roomName}`, {
@@ -103,13 +104,39 @@ export default function Canvas({ params }: { params: Promise<{ slug: string }> }
     }, [tool, socket, roomId]);
 
     return (
-        <div className="p-4">
+        <div className="p-4 flex gap-4">
+            {/* Canvas */}
             <canvas
                 ref={canvasRef}
                 width={1080}
                 height={700}
-                className="border border-border bg-background"
+                className="border border-border bg-background rounded-lg"
             />
+
+            {/* Toolbar */}
+            <div className="flex flex-col gap-3 w-full p-3 rounded-lg bg-black/40 border border-white/10">
+
+                {(["pencil", "rectangle", "circle", "triangle"] as Tool[]).map(t => (
+                    <button
+                        key={t}
+                        onClick={() => setTool(t)}
+                        className={`
+                    w-24 py-2 rounded-md text-sm capitalize
+                    transition-all duration-150
+                    ${tool === t
+                                ? "bg-white text-black font-semibold"
+                                : "bg-black text-white border border-white/20 hover:bg-white/10"}
+                `}
+                    >
+                        {t}
+                    </button>
+                ))}
+                <p className="text-sm text-white/70 mt-2 leading-relaxed">
+                    <span className="font-semibold">Shift + Drag</span> to move around the canvas ·
+                    <span className="font-semibold"> Ctrl + Scroll</span> to zoom in and out
+                </p>
+            </div>
         </div>
+
     );
 }
