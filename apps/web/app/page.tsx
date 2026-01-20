@@ -24,18 +24,15 @@ export default function LandingPage() {
         }
       );
 
-      // If success (200), we get roomId but we want to navigate to slug
-      // The backend returns { roomId: number } on success
-      // But the user request said "this will opened a room with name slug"
-      // So we navigate to /board/[roomName]
+
       router.push(`/board/${roomName}`);
     } catch (e: unknown) {
       const error = e as AxiosError;
       if (error.response?.status === 401) {
-        // Unauthorized
+
         router.push("/signin");
       } else if (error.response?.status === 411) {
-        // Room already exists, just join it
+
         router.push(`/board/${roomName}`);
       } else {
         console.error("Failed to join room", e);
@@ -46,9 +43,7 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground relative">
-      {/* Navbar */}
 
-      {/* Hero */}
       <HeroSection />
 
 
@@ -69,7 +64,7 @@ export default function LandingPage() {
       </div>
 
 
-      {/* Features */}
+
 
       < div className="mx-auto max-w-7xl px-6 py-20 grid gap-12 md:grid-cols-3" >
         {
@@ -96,7 +91,7 @@ export default function LandingPage() {
       </div >
 
 
-      {/* CTA */}
+
       < section className="border-t" >
         <div className="mx-auto max-w-7xl px-6 py-20 text-center">
           <h2 className="text-3xl font-semibold">
@@ -112,7 +107,6 @@ export default function LandingPage() {
         </div>
       </section >
 
-      {/* Footer */}
       < footer className="border-t" >
         <div className="mx-auto max-w-7xl px-6 py-6 flex items-center justify-between text-sm text-muted-foreground">
           <span>© {new Date().getFullYear()} Sketchpad</span>
@@ -123,8 +117,6 @@ export default function LandingPage() {
           </div>
         </div>
       </footer >
-
-      {/* Meeting Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="w-full max-w-md rounded-xl border bg-card p-6 shadow-lg">
