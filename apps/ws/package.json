@@ -12,8 +12,10 @@
   "type": "commonjs",
   "dependencies": {
     "@repo/typescript-config": "workspace:*",
+    "@repo/db": "workspace:*",
     "jsonwebtoken": "^9.0.3",
-    "ws": "^8.19.0"
+    "ws": "^8.19.0",
+    "dotenv": "^17.2.3"
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.10",

@@ -1,33 +1,120 @@
+import "dotenv/config";
 import WebSocket, { WebSocketServer } from "ws";
 import jwt from "jsonwebtoken"
-
+import { prisma } from "@repo/db/dbs"
 const wss = new WebSocketServer({ port: 8080 });
-
+console.log("DATABASE_URL =", process.env.DATABASE_URL);
 import { JWT_SECRET } from "@repo/backend-common/config"
 
-wss.on('connection', function connection(ws, req) {
-    ws.on('error', console.error);
-    const url = new URL(req.url ?? "");
-    const token = url.searchParams.get("token");
+interface userInterface {
+    ws: WebSocket
+    userId: string
+    rooms: string[]
 
-    if (!token) return null;
+}
 
+const users: userInterface[] = [];
+
+function checkUser(token: string): string | null {
     try {
+        const decoded = jwt.verify(token, JWT_SECRET);
 
-        return jwt.verify(token, JWT_SECRET)
-    } catch {
-        ws.close()
+        if (typeof decoded == "string") {
+            return null;
+        }
 
+        if (!decoded || !decoded.userId) {
+            return null;
+        }
 
+        return decoded.userId;
+    } catch (e) {
+        return null;
     }
 
-    ws.on('message', function message(data) {
+}
+
+wss.on('connection', (ws, req) => {
+    ws.on('error', console.error);
+    const url = new URL(req.url!, "http://localhost");
+    const token = url.searchParams.get("token");
+    if (!token) {
+        ws.close()
+        return
+    };
+    const userId = checkUser(token);
+
+    if (userId == null) {
+        ws.close()
+        return;
+    }
+
+    users.push({
+        userId,
+        rooms: [],
+        ws
+    })
+
+
+    ws.on('message', async (data) => {
+
         let realmessage;
         try {
             realmessage = JSON.parse(data.toString());
         } catch (err) {
             console.log("Non-JSON message received:", data.toString());
-            return; // ignore ping / junk
+            return;
+        }
+        // {
+        //     type:join_room,
+        //     roomId:....
+        // }
+        if (realmessage.type == "join_room") {
+            const user = users.find(x => x.ws == ws)
+            user?.rooms.push(realmessage.roomId)
+        }
+        // {
+        //     type:leave_room,
+        //     
+        // }
+        if (realmessage.type === "leave_room") {
+            const user = users.find(x => x.ws === ws);
+            if (!user) return;
+
+            user.rooms = user.rooms.filter(
+                roomId => roomId !== realmessage.roomId
+            );
+        }
+
+
+        //    {
+        //   type:chat
+        //  roomId:...
+        //  message:...JWT_SECRET.
+        //    } 
+        if (realmessage.type === "chat") {
+            const message = realmessage.message;
+            const roomId = realmessage.roomId
+            ////pipleline -> queue
+            await prisma.chats.create({
+                data: {
+                    roomId,
+                    message: message,
+                    userId: userId
+                }
+            })
+            users.filter(x => x.ws != ws).forEach(user => {
+                if (user.rooms.includes(roomId)) {
+
+                    user.ws.send(JSON.stringify({
+                        type: "chat",
+                        message: message,
+                        roomId
+
+                    }))
+                }
+            })
+
         }
 
     });

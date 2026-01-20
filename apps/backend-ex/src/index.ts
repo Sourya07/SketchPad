@@ -5,6 +5,6 @@ const app = express();
 app.use(express.json());
 
 app.use("/v1", userRouter)
-app.listen(3000, () => {
+app.listen(3001, () => {
     console.log("hii there ")
 })

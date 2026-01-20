@@ -101,7 +101,7 @@ router.post("/room", authMiddleware, async (req, res) => {
         })
         return;
     }
-    // @ts-ignore: TODO: Fix this
+    // @ts-ignore
     const userId = req.userId;
 
     try {
@@ -121,6 +121,34 @@ router.post("/room", authMiddleware, async (req, res) => {
         })
     }
 })
+
+router.get("/chat/:id", authMiddleware, async (req, res) => {
+    try {
+        const roomId = Number(req.params.id);
+
+        if (isNaN(roomId)) {
+            return res.status(400).json({ error: "Invalid room id" });
+        }
+
+        const messages = await prisma.chats.findMany({
+            where: {
+                roomId: roomId,
+            },
+            orderBy: {
+                id: "desc",
+            },
+            take: 50,
+        });
+
+
+        res.json({
+            messages: messages.reverse(),
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Failed to fetch messages" });
+    }
+});
 
 
 export default router;
