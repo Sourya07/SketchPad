@@ -9,10 +9,25 @@ import cookieParser from "cookie-parser";
 const app = express();
 app.use(cookieParser());
 app.use(express.json());
-app.use(cors({
-    origin: "http://localhost:3000",
-    credentials: true
-}));
+const allowedOrigins = [
+    "http://localhost:3000",
+    "https://sketch-pad-web.vercel.app"
+];
+app.use(
+    cors({
+        origin: function (origin, callback) {
+            // allow requests with no origin (like mobile apps, curl, Postman)
+            if (!origin) return callback(null, true);
+
+            if (allowedOrigins.includes(origin)) {
+                callback(null, true);
+            } else {
+                callback(new Error("Not allowed by CORS"));
+            }
+        },
+        credentials: true,
+    })
+);
 
 app.use("/v1", userRouter)
 app.listen(3001, () => {
