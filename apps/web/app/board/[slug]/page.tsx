@@ -102,17 +102,54 @@ export default function Canvas({ params }: { params: Promise<{ slug: string }> }
             socket.onmessage = null;
         };
     }, [tool, socket, roomId]);
+    const getCanvasSize = () => {
+        const width = window.innerWidth;
+
+        if (width >= 1280) {
+            // Large desktop
+            return { w: 3000, h: 800 };
+        }
+
+        if (width >= 1024) {
+            // Desktop
+            return { w: 1200, h: 750 };
+        }
+
+        if (width >= 640) {
+            // Tablet
+            return { w: 1400, h: 800 };
+        }
+
+        // Mobile
+        return { w: 700, h: 500 };
+    };
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        const resizeCanvas = () => {
+            const { w, h } = getCanvasSize();
+            canvas.width = w;
+            canvas.height = h;
+        };
+
+        resizeCanvas();
+        window.addEventListener("resize", resizeCanvas);
+
+        return () => window.removeEventListener("resize", resizeCanvas);
+    }, []);
 
     return (
         <div className="p-4 flex gap-4">
             {/* Canvas */}
-            <canvas
-                ref={canvasRef}
-                width={1080}
-                height={700}
-                className="border border-border bg-background rounded-lg"
-            />
 
+
+            <div className="overflow-x-auto flex justify-center">
+                <canvas
+                    ref={canvasRef}
+                    className="border border-border bg-background rounded-lg"
+                />
+            </div>
             {/* Toolbar */}
             <div className="flex flex-col gap-3 w-full p-3 rounded-lg bg-black/40 border border-white/10">
 
