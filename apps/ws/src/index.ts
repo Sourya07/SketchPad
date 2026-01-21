@@ -37,9 +37,10 @@ function checkUser(token: string): string | null {
 
 wss.on('connection', (ws, req) => {
     ws.on('error', console.error);
+    console.log("Raw cookie header:", req.headers.cookie)
     const cookies = parse(req.headers.cookie || "");
     const token = cookies.token;
-
+    console.log(token)
     if (!token) {
         ws.close();
         return;

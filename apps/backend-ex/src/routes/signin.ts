@@ -87,7 +87,7 @@ router.post("/signin", async (req, res) => {
     );
 
     res.cookie("token", token, {
-        httpOnly: false,
+        httpOnly: true,
         secure: true,
         sameSite: "none",
         path: "/",
@@ -181,5 +181,19 @@ router.get("/room/:slug", authMiddleware, async (req, res) => {
         console.error(err);
         res.status(500).json({ error: "Failed to fetch messages" });
     }
+});
+
+router.get("/api/ws-token", authMiddleware, (req, res) => {
+    const wsToken = jwt.sign(
+        {
+            // @ts-ignore
+            userId: req.userId,
+            scope: "ws"
+        },
+        JWT_SECRET,
+        { expiresIn: "5m" }
+    );
+
+    res.json({ wsToken });
 });
 export default router;

@@ -30,12 +30,18 @@ export default function Canvas({ params }: { params: Promise<{ slug: string }> }
                     return;
                 }
                 setRoomId(rID);
-                const token = document.cookie
-                    .split("; ")
-                    .find(c => c.startsWith("token="))
-                    ?.split("=")[1];
 
-                const ws = new WebSocket(`${WEBSOCKET}?token=${token}`);
+                const res = await axios.get(`${BACKEND_URL}/v1/api/ws-token`, {
+                    withCredentials: true
+                });
+
+
+                const { wsToken } = res.data;
+                console.log(wsToken);
+                const ws = new WebSocket(
+                    `${WEBSOCKET}?token=${wsToken}`
+                );
+
 
                 ws.onopen = () => {
                     setSocket(ws);
@@ -157,7 +163,7 @@ export default function Canvas({ params }: { params: Promise<{ slug: string }> }
             {/* Toolbar */}
             <div className="flex mt-8 flex-col gap-3 w-full p-3 rounded-lg bg-black/40 border border-white/10">
 
-                {(["pencil", "rectangle", "circle", "triangle"] as Tool[]).map(t => (
+                {(["pencil", "rect", "circle", "triangle"] as Tool[]).map(t => (
                     <button
                         key={t}
                         onClick={() => setTool(t)}
