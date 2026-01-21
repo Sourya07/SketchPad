@@ -57,42 +57,43 @@ router.post("/signup", async (req, res) => {
 
 
 router.post("/signin", async (req, res) => {
-
-    const validation = signin.safeParse(req.body)
+    const validation = signin.safeParse(req.body);
     if (!validation.success) {
         return res.status(400).json({
             msg: "User data is invalid",
             errors: validation.error.flatten(),
         });
     }
+
     const { username, password } = validation.data;
 
-    const users = await prisma.user.findUnique({
-        where: {
-            email: username
-        }
-    })
-    if (!users) {
-        return res.status(409).json({
-            msg: " No User  exists",
-        });
+    const user = await prisma.user.findUnique({
+        where: { email: username },
+    });
+
+    if (!user) {
+        return res.status(401).json({ msg: "Invalid credentials" });
     }
 
-    const hashedPassword = await bcrypt.compare(password, users.password)
-    if (!hashedPassword) {
-        return res.status(401).json({
-            msg: "Invalid credentials",
-        });
+    const ok = await bcrypt.compare(password, user.password);
+    if (!ok) {
+        return res.status(401).json({ msg: "Invalid credentials" });
     }
 
     const token = jwt.sign(
-        { userId: users.id },
-        JWT_SECRET
+        { userId: user.id },
+        JWT_SECRET,
+        { expiresIn: "7d" }
     );
-    res.json({
-        token
-    })
 
+    res.cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    return res.status(200).json({ success: true });
 });
 router.post("/room", authMiddleware, async (req, res) => {
     const parsedData = room.safeParse(req.body);

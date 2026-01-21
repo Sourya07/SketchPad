@@ -11,15 +11,16 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "@repo/typescript-config": "workspace:*",
     "@repo/db": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "cookie": "^1.1.1",
+    "dotenv": "^17.2.3",
     "jsonwebtoken": "^9.0.3",
-    "ws": "^8.19.0",
-    "dotenv": "^17.2.3"
+    "ws": "^8.19.0"
   },
   "devDependencies": {
+    "@repo/backend-common": "workspace:*",
     "@types/jsonwebtoken": "^9.0.10",
-    "@types/ws": "^8.18.1",
-    "@repo/backend-common": "workspace:*"
+    "@types/ws": "^8.18.1"
   }
 }

@@ -9,7 +9,7 @@ export function Authpage() {
     const router = useRouter();
     const pathname = usePathname();
 
-    // determine page type
+
     const isSignin = pathname === "/signin";
 
     const [state, setState] = useState({
@@ -22,7 +22,7 @@ export function Authpage() {
         try {
             const endpoint = isSignin ? "signin" : "signup";
 
-            // send name only for signup
+
             const payload = isSignin
                 ? {
                     username: state.username,
@@ -32,12 +32,15 @@ export function Authpage() {
 
             const response = await axios.post(
                 `${BACKEND_URL}/v1/${endpoint}`,
-                payload
+                payload,
+                {
+                    withCredentials: true,
+                }
             );
 
             console.log(response.data);
 
-            // example redirect after success
+
             router.push("/");
         } catch (err) {
             console.error(err);
@@ -57,7 +60,7 @@ export function Authpage() {
                         : "Get started in less than a minute."}
                 </p>
 
-                {/* Name (ONLY for signup) */}
+
                 {!isSignin && (
                     <div className="mb-4">
                         <label className="block text-sm font-medium mb-1">
@@ -78,7 +81,7 @@ export function Authpage() {
                     </div>
                 )}
 
-                {/* Email */}
+
                 <div className="mb-4">
                     <label className="block text-sm font-medium mb-1">
                         Email
@@ -97,7 +100,6 @@ export function Authpage() {
                     />
                 </div>
 
-                {/* Password */}
                 <div className="mb-6">
                     <label className="block text-sm font-medium mb-1">
                         Password

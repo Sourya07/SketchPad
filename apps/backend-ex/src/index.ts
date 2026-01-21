@@ -2,8 +2,12 @@ import "dotenv/config";
 import express from 'express'
 import userRouter from "./routes/signin";
 import cors from "cors"
-const app = express();
+import cookieParser from "cookie-parser";
 
+// in server.ts
+
+const app = express();
+app.use(cookieParser());
 app.use(express.json());
 app.use(cors({
     origin: "http://localhost:3000",

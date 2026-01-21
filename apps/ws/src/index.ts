@@ -2,8 +2,9 @@ import "dotenv/config";
 import WebSocket, { WebSocketServer } from "ws";
 import jwt from "jsonwebtoken"
 import { prisma } from "@repo/db/dbs"
+import { parse } from "cookie";
 const wss = new WebSocketServer({ port: 8080 });
-console.log("DATABASE_URL =", process.env.DATABASE_URL);
+
 import { JWT_SECRET } from "@repo/backend-common/config"
 
 interface userInterface {
@@ -36,16 +37,18 @@ function checkUser(token: string): string | null {
 
 wss.on('connection', (ws, req) => {
     ws.on('error', console.error);
-    const url = new URL(req.url!, "http://localhost");
-    const token = url.searchParams.get("token");
+    const cookies = parse(req.headers.cookie || "");
+    const token = cookies.token;
+
     if (!token) {
-        ws.close()
-        return
-    };
+        ws.close();
+        return;
+    }
+
     const userId = checkUser(token);
 
-    if (userId == null) {
-        ws.close()
+    if (!userId) {
+        ws.close();
         return;
     }
 

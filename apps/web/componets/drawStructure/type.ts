@@ -20,6 +20,10 @@ export type Shape =
         y2: number;
         x3: number;
         y3: number;
+    }
+    | {
+        type: "pencil";
+        points: { x: number; y: number }[];
     };
 
-export type Tool = "rect" | "circle" | "triangle";
+export type Tool = "rect" | "circle" | "triangle" | "pencil";

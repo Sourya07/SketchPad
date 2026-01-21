@@ -1,15 +1,49 @@
-
+"use client";
 
 import Link from "next/link";
-import { Navbar } from "../componets/navabr";
 import HeroSection from "../componets/hero";
+import { BACKEND_URL } from "../server";
+import { useState } from "react";
+import axios, { AxiosError } from "axios";
+import { useRouter } from "next/navigation";
 
 export default function LandingPage() {
-  return (
-    <div className="min-h-screen bg-background text-foreground">
-      {/* Navbar */}
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [roomName, setRoomName] = useState("");
+  const router = useRouter();
 
-      {/* Hero */}
+  const joinRoom = async () => {
+    try {
+      await axios.post(
+        `${BACKEND_URL}/v1/room`,
+        {
+          name: roomName,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+
+
+      router.push(`/board/${roomName}`);
+    } catch (e: unknown) {
+      const error = e as AxiosError;
+      if (error.response?.status === 401) {
+
+        router.push("/signin");
+      } else if (error.response?.status === 411) {
+
+        router.push(`/board/${roomName}`);
+      } else {
+        console.error("Failed to join room", e);
+        alert("Something went wrong");
+      }
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-background text-foreground relative">
+
       <HeroSection />
 
 
@@ -21,13 +55,16 @@ export default function LandingPage() {
           </button>
         </Link>
 
-        <button className="rounded-lg border px-6 py-3 text-sm font-medium hover:bg-accent transition">
-          View demo
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="rounded-lg border px-6 py-3 text-sm font-medium hover:bg-accent transition"
+        >
+          Meetings
         </button>
       </div>
 
 
-      {/* Features */}
+
 
       < div className="mx-auto max-w-7xl px-6 py-20 grid gap-12 md:grid-cols-3" >
         {
@@ -54,7 +91,7 @@ export default function LandingPage() {
       </div >
 
 
-      {/* CTA */}
+
       < section className="border-t" >
         <div className="mx-auto max-w-7xl px-6 py-20 text-center">
           <h2 className="text-3xl font-semibold">
@@ -70,7 +107,6 @@ export default function LandingPage() {
         </div>
       </section >
 
-      {/* Footer */}
       < footer className="border-t" >
         <div className="mx-auto max-w-7xl px-6 py-6 flex items-center justify-between text-sm text-muted-foreground">
           <span>© {new Date().getFullYear()} Sketchpad</span>
@@ -81,6 +117,40 @@ export default function LandingPage() {
           </div>
         </div>
       </footer >
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-xl border bg-card p-6 shadow-lg">
+            <h3 className="text-xl font-semibold">Join a Meeting</h3>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Enter the room name to join or create a new one.
+            </p>
+
+            <input
+              type="text"
+              placeholder="Room Name (e.g. daily-standup)"
+              className="mt-4 w-full rounded-md border bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              value={roomName}
+              onChange={(e) => setRoomName(e.target.value)}
+            />
+
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="rounded-md px-4 py-2 text-sm font-medium hover:bg-accent transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={joinRoom}
+                className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 transition"
+                disabled={!roomName.trim()}
+              >
+                Join Room
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div >
   );
 }
