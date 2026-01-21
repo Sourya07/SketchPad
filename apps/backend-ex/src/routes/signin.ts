@@ -191,7 +191,7 @@ router.get("/api/ws-token", authMiddleware, (req, res) => {
             scope: "ws"
         },
         JWT_SECRET,
-        { expiresIn: "5m" }
+        { expiresIn: "7d" }
     );
 
     res.json({ wsToken });

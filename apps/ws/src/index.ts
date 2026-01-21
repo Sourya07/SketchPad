@@ -3,7 +3,24 @@ import WebSocket, { WebSocketServer } from "ws";
 import jwt from "jsonwebtoken"
 import { prisma } from "@repo/db/dbs"
 import { parse } from "cookie";
-const wss = new WebSocketServer({ port: 8080 });
+import http from "http";
+
+
+const PORT = Number(process.env.PORT) || 8080;
+
+
+const server = http.createServer((req, res) => {
+    res.writeHead(200);
+    res.end("WebSocket server running");
+});
+
+
+const wss = new WebSocketServer({ server });
+
+
+server.listen(PORT, () => {
+    console.log(`Server listening on port ${PORT}`);
+});
 
 import { JWT_SECRET } from "@repo/backend-common/config"
 
