@@ -17,4 +17,5 @@ app.use(cors({
 app.use("/v1", userRouter)
 app.listen(3001, () => {
     console.log("hii there ")
-})
+});
+
