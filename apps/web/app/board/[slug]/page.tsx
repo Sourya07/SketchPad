@@ -37,7 +37,7 @@ export default function Canvas({ params }: { params: Promise<{ slug: string }> }
 
 
                 const { wsToken } = res.data;
-                console.log(wsToken);
+
                 const ws = new WebSocket(
                     `${WEBSOCKET}?token=${wsToken}`
                 );
