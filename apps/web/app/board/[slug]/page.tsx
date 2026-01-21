@@ -77,7 +77,7 @@ export default function Canvas({ params }: { params: Promise<{ slug: string }> }
                         const shape = JSON.parse(msg.message);
                         addRemoteShape(shape);
                     } catch {
-
+                        console.log("error")
                     }
                 });
             } catch (e) {
