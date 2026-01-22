@@ -182,4 +182,18 @@ router.get("/room/:slug", authMiddleware, async (req, res) => {
         res.status(500).json({ error: "Failed to fetch messages" });
     }
 });
+
+router.get("/api/ws-token", authMiddleware, (req, res) => {
+    const wsToken = jwt.sign(
+        {
+            // @ts-ignore
+            userId: req.userId,
+            scope: "ws"
+        },
+        JWT_SECRET,
+        { expiresIn: "7d" }
+    );
+
+    res.json({ wsToken });
+});
 export default router;

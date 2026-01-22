@@ -31,7 +31,17 @@ export default function Canvas({ params }: { params: Promise<{ slug: string }> }
                 }
                 setRoomId(rID);
 
-                const ws = new WebSocket(`${WEBSOCKET}?token=cookie_auth`);
+                const res = await axios.get(`${BACKEND_URL}/v1/api/ws-token`, {
+                    withCredentials: true
+                });
+
+
+                const { wsToken } = res.data;
+
+                const ws = new WebSocket(
+                    `${WEBSOCKET}?token=${wsToken}`
+                );
+
 
                 ws.onopen = () => {
                     setSocket(ws);
@@ -151,14 +161,14 @@ export default function Canvas({ params }: { params: Promise<{ slug: string }> }
                 />
             </div>
             {/* Toolbar */}
-            <div className="flex flex-col gap-3 w-full p-3 rounded-lg bg-black/40 border border-white/10">
+            <div className="flex mt-8 flex-col gap-3 w-full p-3 rounded-lg bg-black/40 border border-white/10">
 
-                {(["pencil", "rectangle", "circle", "triangle"] as Tool[]).map(t => (
+                {(["pencil", "rect", "circle", "triangle"] as Tool[]).map(t => (
                     <button
                         key={t}
                         onClick={() => setTool(t)}
                         className={`
-                    w-24 py-2 rounded-md text-sm capitalize
+                    w-24  mt-2 py-2 rounded-md text-sm capitalize
                     transition-all duration-150
                     ${tool === t
                                 ? "bg-white text-black font-semibold"
