@@ -1,4 +1,4 @@
-# 🎨 SketchPad
+#  SketchPad
 
 > **A high-performance, real-time collaborative whiteboard application.**
 
@@ -6,7 +6,7 @@
 
 This project demonstrates advanced full-stack engineering concepts including WebSocket management, monorepo architecture, and type-safe communication between distributed services.
 
-## 🚀 Tech Stack
+##  Tech Stack
 
 ### Frontend
 - **Framework**: [Next.js 16](https://nextjs.org/) (App Router)
@@ -22,7 +22,7 @@ This project demonstrates advanced full-stack engineering concepts including Web
 - **Monorepo Tooling**: [Turborepo](https://turbo.build/) for high-performance build system and package management.
 - **Authentication**: JWT (JSON Web Tokens) with HTTP-only cookies and Bcrypt password hashing.
 
-## ✨ Key Features
+##  Key Features
 
 - **Real-time Collaboration**: Multi-user drawing synchronization with low latency.
 - **Shared Canvas**: Interactive whiteboard supporting shapes and freehand drawing.
@@ -81,7 +81,7 @@ This command starts all applications effectively:
 
 ---
 
-## 🏗️ Architecture Overview
+##  Architecture Overview
 
 The project is structured as a **Turborepo** monorepo:
 
