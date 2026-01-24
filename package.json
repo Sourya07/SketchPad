@@ -7,7 +7,10 @@
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
-    "postinstall": "turbo run db:generate"
+    "postinstall": "turbo run db:generate",
+    "start:web": "cd apps/web && pnpm run start",
+    "start:backend": "cd apps/backend && pnpm run src/index.ts",
+    "start:websocket": "cd apps/websocket && pnpm run src/index.ts"
   },
   "devDependencies": {
     "prettier": "^3.7.4",

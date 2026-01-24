@@ -1,0 +1,15 @@
+FROM node:22-alpine
+
+WORKDIR /app
+RUN corepack enable
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json turbo.json ./
+COPY ./packages ./packages
+
+
+COPY ./apps/backend-ex ./apps/backend-ex
+
+RUN pnpm install 
+RUN pnpm postinstall
+
+CMD ["pnpm", "--filter", "backend-ex", "run", "dev"]
+
