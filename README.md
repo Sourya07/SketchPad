@@ -79,9 +79,41 @@ This command starts all applications effectively:
 - **HTTP Backend**: `http://localhost:3001` (or configured port)
 - **WebSocket Server**: `ws://localhost:8080` (or configured port)
 
----
+## 🐳 Docker Support
 
-##  Architecture Overview
+Docker configuration is available in the `docker/features` branch.
+
+### Quick Start with Docker
+
+1.  **Switch to the Docker branch**
+    ```bash
+    git checkout docker/features
+    ```
+
+2.  **Build the images**
+    Run the following commands from the project root:
+
+    ```bash
+    # Build Web App
+    docker build -t sketchpad-web -f docker/Dockerfile.web .
+
+    # Build WebSocket Server
+    docker build -t sketchpad-ws -f docker/Dockerfile.ws .
+
+    # Build Backend API
+    docker build -t sketchpad-backend -f docker/Dockerfile.backned .
+    ```
+
+3.  **Run the containers**
+    ```bash
+    docker run -p 3000:3000 sketchpad-web
+    docker run -p 8080:8080 sketchpad-ws
+    docker run -p 3001:3001 sketchpad-backend
+    ```
+
+
+
+## Architecture Overview
 
 The project is structured as a **Turborepo** monorepo:
 
