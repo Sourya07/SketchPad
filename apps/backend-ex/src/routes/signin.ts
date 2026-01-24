@@ -88,12 +88,14 @@ router.post("/signin", async (req, res) => {
 
     res.cookie("token", token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
+        secure: true,
+        sameSite: "none",
+        path: "/",
         maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     return res.status(200).json({ success: true });
+
 });
 router.post("/room", authMiddleware, async (req, res) => {
     const parsedData = room.safeParse(req.body);
@@ -179,5 +181,19 @@ router.get("/room/:slug", authMiddleware, async (req, res) => {
         console.error(err);
         res.status(500).json({ error: "Failed to fetch messages" });
     }
+});
+
+router.get("/api/ws-token", authMiddleware, (req, res) => {
+    const wsToken = jwt.sign(
+        {
+            // @ts-ignore
+            userId: req.userId,
+            scope: "ws"
+        },
+        JWT_SECRET,
+        { expiresIn: "7d" }
+    );
+
+    res.json({ wsToken });
 });
 export default router;
