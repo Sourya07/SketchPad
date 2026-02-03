@@ -6,7 +6,7 @@
     "./dbs": "./dist/src/index.js"
   },
   "scripts": {
-    "build": "tsc && sed -i '' 's/globalThis.*import.meta.url.*/\\/\\/ patched/' dist/generated/prisma/client.js",
+    "build": "tsc && node fix-prisma-client.js",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev --skip-generate",
     "db:deploy": "prisma migrate deploy"

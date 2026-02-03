@@ -3,7 +3,24 @@ import WebSocket, { WebSocketServer } from "ws";
 import jwt from "jsonwebtoken"
 import { prisma } from "@repo/db/dbs"
 import { parse } from "cookie";
-const wss = new WebSocketServer({ port: 8080 });
+import http from "http";
+
+
+const PORT = Number(process.env.PORT) || 8080;
+
+
+const server = http.createServer((req, res) => {
+    res.writeHead(200);
+    res.end("WebSocket server running");
+});
+
+
+const wss = new WebSocketServer({ server });
+
+
+server.listen(PORT, () => {
+    console.log(`Server listening on port ${PORT}`);
+});
 
 import { JWT_SECRET } from "@repo/backend-common/config"
 
@@ -37,8 +54,9 @@ function checkUser(token: string): string | null {
 
 wss.on('connection', (ws, req) => {
     ws.on('error', console.error);
-    const cookies = parse(req.headers.cookie || "");
-    const token = cookies.token;
+
+    const url = new URL(req.url || "", `http://${req.headers.host}`);
+    const token = url.searchParams.get("token");
 
     if (!token) {
         ws.close();

@@ -31,7 +31,17 @@ export default function Canvas({ params }: { params: Promise<{ slug: string }> }
                 }
                 setRoomId(rID);
 
-                const ws = new WebSocket(`${WEBSOCKET}?token=cookie_auth`);
+                const res = await axios.get(`${BACKEND_URL}/v1/api/ws-token`, {
+                    withCredentials: true
+                });
+
+
+                const { wsToken } = res.data;
+
+                const ws = new WebSocket(
+                    `${WEBSOCKET}?token=${wsToken}`
+                );
+
 
                 ws.onopen = () => {
                     setSocket(ws);
@@ -77,7 +87,7 @@ export default function Canvas({ params }: { params: Promise<{ slug: string }> }
                         const shape = JSON.parse(msg.message);
                         addRemoteShape(shape);
                     } catch {
-
+                        console.log("error")
                     }
                 });
             } catch (e) {
@@ -102,26 +112,63 @@ export default function Canvas({ params }: { params: Promise<{ slug: string }> }
             socket.onmessage = null;
         };
     }, [tool, socket, roomId]);
+    const getCanvasSize = () => {
+        const width = window.innerWidth;
+
+        if (width >= 1280) {
+            // Large desktop
+            return { w: 3000, h: 800 };
+        }
+
+        if (width >= 1024) {
+            // Desktop
+            return { w: 1200, h: 750 };
+        }
+
+        if (width >= 640) {
+            // Tablet
+            return { w: 1400, h: 800 };
+        }
+
+        // Mobile
+        return { w: 700, h: 500 };
+    };
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        const resizeCanvas = () => {
+            const { w, h } = getCanvasSize();
+            canvas.width = w;
+            canvas.height = h;
+        };
+
+        resizeCanvas();
+        window.addEventListener("resize", resizeCanvas);
+
+        return () => window.removeEventListener("resize", resizeCanvas);
+    }, []);
 
     return (
         <div className="p-4 flex gap-4">
             {/* Canvas */}
-            <canvas
-                ref={canvasRef}
-                width={1080}
-                height={700}
-                className="border border-border bg-background rounded-lg"
-            />
 
+
+            <div className="overflow-x-auto flex justify-center">
+                <canvas
+                    ref={canvasRef}
+                    className="border border-border bg-background rounded-lg"
+                />
+            </div>
             {/* Toolbar */}
-            <div className="flex flex-col gap-3 w-full p-3 rounded-lg bg-black/40 border border-white/10">
+            <div className="flex mt-8 flex-col gap-3 w-full p-3 rounded-lg bg-black/40 border border-white/10">
 
-                {(["pencil", "rectangle", "circle", "triangle"] as Tool[]).map(t => (
+                {(["pencil", "rect", "circle", "triangle"] as Tool[]).map(t => (
                     <button
                         key={t}
                         onClick={() => setTool(t)}
                         className={`
-                    w-24 py-2 rounded-md text-sm capitalize
+                    w-24  mt-2 py-2 rounded-md text-sm capitalize
                     transition-all duration-150
                     ${tool === t
                                 ? "bg-white text-black font-semibold"
