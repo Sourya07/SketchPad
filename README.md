@@ -79,7 +79,7 @@ This command starts all applications effectively:
 - **HTTP Backend**: `http://localhost:3001` (or configured port)
 - **WebSocket Server**: `ws://localhost:8080` (or configured port)
 
-## 🐳 Docker Support
+## Docker Support
 
 Docker configuration is available in the `docker/features` branch.
 
